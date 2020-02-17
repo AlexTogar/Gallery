@@ -9,6 +9,10 @@ using Color = UnityEngine.Color;
 public class Initial : MonoBehaviour
 {
     public Material picture;
+    public GameObject directionalLight;
+    public GameObject skyAndFogVolume;
+
+    protected System.Random rnd = new System.Random();
     //current index of showing picture
     protected int i = 0;
     //flag of space pressing
@@ -73,9 +77,22 @@ public class Initial : MonoBehaviour
     }
     */
 
+    public void SetLightColor(Color color)
+    {
+        directionalLight.GetComponent<Light>().color = color;
+
+    }
+
+    public void SetFogColor(Color color)
+    {
+        RenderSettings.fogColor = color;
+    }
+
+
     public void ChangeEnvironmentColor(Color color)
     {
-
+        SetLightColor(color);
+        //SetFogColor(color);
     }
 
     //===================== UNITY'S BUILT-IN METHODS ===========================
@@ -91,7 +108,7 @@ public class Initial : MonoBehaviour
           textures sorted by name in pictures folder */
 
         picture.SetTexture("_BaseColorMap", textures[0]);
-
+        
         //Process.Start("cmd.exe", "/C python python_script.py");
 
     }
@@ -107,6 +124,8 @@ public class Initial : MonoBehaviour
             space_flag = true;
 
             picture.SetTexture("_BaseColorMap", textures[i]);
+            ChangeEnvironmentColor(textures[i].GetPixel((int)(rnd.Next()*textures[i].height), (int)(rnd.Next()*textures[i].width)));
+            
             i += 1;
             if (i > textures.Count - 1) { i = 0; }
         }
