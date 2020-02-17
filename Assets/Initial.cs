@@ -1,35 +1,37 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using UnityEngine;
-using System.Collections.Generic;
-public class Initial : MonoBehaviour
+using Color = UnityEngine.Color;
 
+public class Initial : MonoBehaviour
 {
     public Material picture;
     //current index of showing picture
-    public int i = 1;
+    protected int i = 0;
     //flag of space pressing
-    public bool space_flag = false;
-    List<Texture2D> textures = new List<Texture2D>();
-    // Start is called before the first frame update
-    void Start()
+    protected bool space_flag = false;
+    //textures list, which will be filled by FillTexturesList() method, called in Start() method
+    protected List<Texture2D> textures = new List<Texture2D>();
+    //protected List<System.Drawing.Bitmap> bitmaps = new List<Bitmap>();
+    //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
+
+    /* void FillBitmapsList()
     {
-        
-        Texture texture = picture.GetTexture("_BaseColorMap");
-        Texture2D texture2d = texture as Texture2D;
-        FillImageList();
-        picture.SetTexture("_BaseColorMap", textures[0]);
-
-        //texture2d.Resize(200, 200);
-        //texture2d.Apply();
-
-        //start ruby script
-        //Process.Start("cmd.exe", "/C ruby ruby_script.rb");
-
+        string currentFolderPath = System.Environment.CurrentDirectory;
+        DirectoryInfo d = new DirectoryInfo(currentFolderPath + "/Assets/" + "/pictures/");
+        FileInfo[] files = d.GetFiles("*.jpg");
+        foreach (FileInfo fileInfo in files)
+        {
+            bitmaps.Add(ConvertToBitmap(fileInfo.FullName));
+        }
     }
+    */
 
-    void FillImageList()
+    //fill textures list from /Assets/pictures/ folder with .jpg extension
+    void FillTexturesList()
     {
         string currentFolderPath = System.Environment.CurrentDirectory;
         DirectoryInfo d = new DirectoryInfo(currentFolderPath + "/Assets/" + "/pictures/");
@@ -40,6 +42,7 @@ public class Initial : MonoBehaviour
         }
     }
 
+    //Convertion from .jgp to texture
     static Texture2D LoadJPG(FileInfo filePath)
     {
         Texture2D tex = null;
@@ -55,33 +58,63 @@ public class Initial : MonoBehaviour
         return tex;
     }
 
+    //Convert file via FileName to bitmap
+    /*public Bitmap ConvertToBitmap(string fileName)
+    {
+        Bitmap bitmap;
+        using (Stream bmpStream = System.IO.File.Open(fileName, System.IO.FileMode.Open))
+        {
+            Image image = Image.FromStream(bmpStream);
+
+            bitmap = new Bitmap(image);
+
+        }
+        return bitmap;
+    }
+    */
+
+    public void ChangeEnvironmentColor(Color color)
+    {
+
+    }
+
+    //===================== UNITY'S BUILT-IN METHODS ===========================
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        FillTexturesList();
+        //FillBitmapsList();
+
+        //print(bitmaps);
+        /*set first texture to picture object
+          textures sorted by name in pictures folder */
+
+        picture.SetTexture("_BaseColorMap", textures[0]);
+
+        //Process.Start("cmd.exe", "/C python python_script.py");
+
+    }
+
+
+
     // Update is called once per frame
     void Update()
     {
-        // change picture by pressing space
+        //handler of space pressing
         if (Input.GetKeyDown("space") && space_flag == false)
         {
             space_flag = true;
-            i = i + 1;
-            if (i > 3)
-            {
-                i = 1;
-            }
-            //handler of space pressing
-            /*
-            string picture_path = Application.dataPath + "/pictures/picture" + i.ToString();
-            Texture2D new_texture2d = Resources.Load(picture_path, typeof(Texture2D)) as Texture2D;
-            picture.SetTexture("_MainTex", new_texture2d);
-            */
-            
-            picture.SetTexture("_BaseColorMap", textures[i-1]);
+
+            picture.SetTexture("_BaseColorMap", textures[i]);
+            i += 1;
+            if (i > textures.Count - 1) { i = 0; }
         }
         else
         {
-
-        }
-        {
             space_flag = false;
         }
+
+
     }
 }
