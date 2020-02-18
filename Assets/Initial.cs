@@ -119,7 +119,7 @@ public class Initial : MonoBehaviour
     void Update()
     {
         //handler of space pressing
-        if (Input.GetKeyDown("space") && space_flag == false)
+        if (Input.GetKeyDown("l") && space_flag == false)
         {
             space_flag = true;
 
