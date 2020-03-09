@@ -64,13 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Initial.cs" />
-    <Compile Include="Assets\Scripts\BackOnPosWhenFall.cs" />
-    <Compile Include="Assets\Scripts\Controller.cs" />
-    <Compile Include="Assets\Scripts\DoorUnlock.cs" />
-    <Compile Include="Assets\Scripts\GlowNearGrab.cs" />
-    <Compile Include="Assets\Scripts\IpadControll.cs" />
-    <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
-    <Compile Include="Assets\Scripts\SnapOnPos.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Unity_projects/Gallery/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
