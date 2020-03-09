@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityTemplateProjects;
 using Color = UnityEngine.Color;
 
 public class Initial : MonoBehaviour
@@ -11,12 +13,15 @@ public class Initial : MonoBehaviour
     public Material picture;
     public GameObject directionalLight;
     public GameObject skyAndFogVolume;
+    public GameObject canvas;
+    public GameObject mainCamera;
 
     protected System.Random rnd = new System.Random();
     //current index of showing picture
     protected int i = 0;
     //flag of space pressing
     protected bool space_flag = false;
+    protected bool f1_flag = false;
     //textures list, which will be filled by FillTexturesList() method, called in Start() method
     protected List<Texture2D> textures = new List<Texture2D>();
     //protected List<System.Drawing.Bitmap> bitmaps = new List<Bitmap>();
@@ -100,6 +105,8 @@ public class Initial : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Hide main menu
+        canvas.SetActive(false);
         FillTexturesList();
         //FillBitmapsList();
 
@@ -132,6 +139,26 @@ public class Initial : MonoBehaviour
         else
         {
             space_flag = false;
+        }
+
+        //handler of f1 pressing
+        if (Input.GetKeyDown(KeyCode.F1) && f1_flag == false)
+        {
+            f1_flag = true;
+            if (canvas.active)
+            {
+                canvas.SetActive(false);
+                mainCamera.GetComponent<SimpleCameraController>().enabled = true;
+            } else
+            {
+                canvas.SetActive(true);
+                mainCamera.GetComponent<SimpleCameraController>().enabled = false;
+            }
+
+        }
+        else
+        {
+            f1_flag = false;
         }
 
 
