@@ -14,6 +14,9 @@ public class Initial : MonoBehaviour
     public GameObject directionalLight;
     public GameObject skyAndFogVolume;
     public GameObject canvas;
+    public GameObject mainMenu;
+    public GameObject selectPictureMenu;
+    public GameObject changeEnvironmentMenu;
     public GameObject mainCamera;
 
     protected System.Random rnd = new System.Random();
@@ -28,7 +31,13 @@ public class Initial : MonoBehaviour
     //protected List<System.Drawing.Bitmap> bitmaps = new List<Bitmap>();
     //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
 
-
+    //Deactive all menu to show one from them after that
+    public void DeactiveAllMenu()
+    {
+        mainMenu.SetActive(false);
+        selectPictureMenu.SetActive(false);
+        changeEnvironmentMenu.SetActive(false);
+    }
     //fill textures list from /Assets/pictures/ folder with .jpg extension
     void FillTexturesList()
     {
@@ -89,6 +98,9 @@ public class Initial : MonoBehaviour
         }
         else
         {
+            DeactiveAllMenu();
+            //show exactly main menu
+            mainMenu.SetActive(true);
             canvas.SetActive(true);
         }
     }
@@ -141,6 +153,9 @@ public class Initial : MonoBehaviour
     {
         //Hide main menu
         canvas.SetActive(false);
+        //selectPictureMenu.SetActive(false);
+        //uploadPictureMenu.SetActive(false);
+        //changeEnvironmentMenu.SetActive(false);
         FillTexturesList();
 
         //Set default picture
