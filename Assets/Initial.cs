@@ -19,25 +19,15 @@ public class Initial : MonoBehaviour
     protected System.Random rnd = new System.Random();
     //current index of showing picture
     protected int i = 0;
-    //flag of space pressing
-    protected bool space_flag = false;
-    protected bool f1_flag = false;
+    //flags of buttons pressing
+    protected bool lFlag = false;
+    protected bool jFlag = false;
+    protected bool f1Flag = false;
     //textures list, which will be filled by FillTexturesList() method, called in Start() method
     protected List<Texture2D> textures = new List<Texture2D>();
     //protected List<System.Drawing.Bitmap> bitmaps = new List<Bitmap>();
     //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
 
-    /* void FillBitmapsList()
-    {
-        string currentFolderPath = System.Environment.CurrentDirectory;
-        DirectoryInfo d = new DirectoryInfo(currentFolderPath + "/Assets/" + "/pictures/");
-        FileInfo[] files = d.GetFiles("*.jpg");
-        foreach (FileInfo fileInfo in files)
-        {
-            bitmaps.Add(ConvertToBitmap(fileInfo.FullName));
-        }
-    }
-    */
 
     //fill textures list from /Assets/pictures/ folder with .jpg extension
     void FillTexturesList()
@@ -67,20 +57,6 @@ public class Initial : MonoBehaviour
         return tex;
     }
 
-    //Convert file via FileName to bitmap
-    /*public Bitmap ConvertToBitmap(string fileName)
-    {
-        Bitmap bitmap;
-        using (Stream bmpStream = System.IO.File.Open(fileName, System.IO.FileMode.Open))
-        {
-            Image image = Image.FromStream(bmpStream);
-
-            bitmap = new Bitmap(image);
-
-        }
-        return bitmap;
-    }
-    */
 
     public void SetLightColor(Color color)
     {
@@ -90,7 +66,7 @@ public class Initial : MonoBehaviour
 
     public void SetFogColor(Color color)
     {
-        RenderSettings.fogColor = color;
+        RenderSettings.fogColor = color;  //doesn't work yet
     }
 
 
@@ -100,7 +76,65 @@ public class Initial : MonoBehaviour
         //SetFogColor(color);
     }
 
-    //===================== UNITY'S BUILT-IN METHODS ===========================
+    public void SetRandomEnvironmentColor()
+    {
+        ChangeEnvironmentColor(new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f)));
+    }
+
+    public void ResumeOrPauseGame()
+    {
+        if (canvas.active)
+        {
+            canvas.SetActive(false);
+        }
+        else
+        {
+            canvas.SetActive(true);
+        }
+    }
+
+    public void SetPictureByName(string pictureName)
+    {
+        // Texture2D newTexture = new Texture2D(1000, 1000);
+        int index = 0;
+        foreach (Texture2D texture in textures)
+        {
+            index++;
+            if (texture.name == pictureName)
+            {
+                picture.SetTexture("_BaseColorMap", texture);
+                i = index;
+                break;
+            }
+        }
+    }
+
+    public void SetNextPicture()
+    {
+        i += 1;
+        if (i > textures.Count - 1) { i = 0; }
+        picture.SetTexture("_BaseColorMap", textures[i]);
+        ChangeEnvironmentColor(textures[i].GetPixel((int)(Random.Range(0, 1f) * textures[i].height), (int)(Random.Range(0, 1f) * textures[i].width)));
+    }
+
+    public void SetPreviousPicture()
+    {
+        i -= 1;
+        if (i < 0) { i = textures.Count - 1; }
+        picture.SetTexture("_BaseColorMap", textures[i]);
+        ChangeEnvironmentColor(textures[i].GetPixel((int)(Random.Range(0, 1f) * textures[i].height), (int)(Random.Range(0, 1f) * textures[i].width)));
+    }
+
+    public void QuitGame()
+    {
+        //for application
+        Application.Quit();
+        //for unity editor
+        UnityEditor.EditorApplication.isPlaying = false;
+    }
+
+
+    //===================== BUILT-IN METHODS ===========================
 
     // Start is called before the first frame update
     void Start()
@@ -108,15 +142,9 @@ public class Initial : MonoBehaviour
         //Hide main menu
         canvas.SetActive(false);
         FillTexturesList();
-        //FillBitmapsList();
 
-        //print(bitmaps);
-        /*set first texture to picture object
-          textures sorted by name in pictures folder */
-
+        //Set default picture
         picture.SetTexture("_BaseColorMap", textures[0]);
-        
-        //Process.Start("cmd.exe", "/C python python_script.py");
 
     }
 
@@ -125,40 +153,37 @@ public class Initial : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //handler of space pressing
-        if (Input.GetKeyDown("l") && space_flag == false)
+        //handler of the l pressing (next picture)
+        if (Input.GetKeyDown("l") && lFlag == false)
         {
-            space_flag = true;
-
-            picture.SetTexture("_BaseColorMap", textures[i]);
-            ChangeEnvironmentColor(textures[i].GetPixel((int)(rnd.Next()*textures[i].height), (int)(rnd.Next()*textures[i].width)));
-            
-            i += 1;
-            if (i > textures.Count - 1) { i = 0; }
+            lFlag = true;
+            SetNextPicture();
         }
         else
         {
-            space_flag = false;
+            lFlag = false;
         }
 
-        //handler of f1 pressing
-        if (Input.GetKeyDown(KeyCode.F1) && f1_flag == false)
+        //handler of the j pressing (prev picture)
+        if (Input.GetKeyDown("j")&& jFlag == false)
         {
-            f1_flag = true;
-            if (canvas.active)
-            {
-                canvas.SetActive(false);
-                mainCamera.GetComponent<SimpleCameraController>().enabled = true;
-            } else
-            {
-                canvas.SetActive(true);
-                mainCamera.GetComponent<SimpleCameraController>().enabled = false;
-            }
-
+            jFlag = true;
+            SetPreviousPicture();
         }
         else
         {
-            f1_flag = false;
+            jFlag = false;
+        }
+
+        //handler of the f1 pressing (Pause/Resume)
+        if (Input.GetKeyDown(KeyCode.F1) && f1Flag == false)
+        {
+            f1Flag = true;
+            ResumeOrPauseGame();
+        }
+        else
+        {
+            f1Flag = false;
         }
 
 
