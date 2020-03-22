@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityTemplateProjects;
@@ -14,9 +15,12 @@ public class Initial : MonoBehaviour
     public GameObject directionalLight;
     public GameObject skyAndFogVolume;
     public GameObject canvas;
+    public GameObject viewPortContent;
     public GameObject mainMenu;
     public GameObject selectPictureMenu;
     public GameObject changeEnvironmentMenu;
+    public GameObject RowPrefab;
+    public GameObject SelectPictureButtonPrefab;
     public GameObject mainCamera;
 
     protected System.Random rnd = new System.Random();
@@ -48,6 +52,7 @@ public class Initial : MonoBehaviour
         {
             textures.Add(LoadJPG(fileInfo));
         }
+        textures = textures.OrderBy(o => o.name).ToList();
     }
 
     //Convertion from .jgp to texture
@@ -157,10 +162,22 @@ public class Initial : MonoBehaviour
         //uploadPictureMenu.SetActive(false);
         //changeEnvironmentMenu.SetActive(false);
         FillTexturesList();
-
-        //Set default picture
+        //Set default picture and environment
         picture.SetTexture("_BaseColorMap", textures[0]);
+        ChangeEnvironmentColor(textures[0].GetPixel((int)(Random.Range(0, 1f) * textures[0].height), (int)(Random.Range(0, 1f) * textures[0].width)));
 
+
+        //create select list of pictures
+        GameObject Row = Instantiate(RowPrefab);
+        Row.transform.SetParent(viewPortContent.transform);
+        Row.name = "Row" + i.ToString();
+        Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -50);
+
+        GameObject SelectPictureButton = Instantiate(SelectPictureButtonPrefab);
+        SelectPictureButton.transform.SetParent(Row.transform);
+        SelectPictureButton.name = "SelectPictureButton" + i.ToString();
+        SelectPictureButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(250, 0);
+        
     }
 
 
