@@ -20,7 +20,6 @@ public class Initial : MonoBehaviour
     public GameObject selectPictureMenu;
     public GameObject changeEnvironmentMenu;
     public GameObject RowPrefab;
-    public GameObject SelectPictureButtonPrefab;
     public GameObject mainCamera;
 
     protected System.Random rnd = new System.Random();
@@ -116,13 +115,15 @@ public class Initial : MonoBehaviour
         int index = 0;
         foreach (Texture2D texture in textures)
         {
-            index++;
+
             if (texture.name == pictureName)
             {
                 picture.SetTexture("_BaseColorMap", texture);
+                ChangeEnvironmentColor(texture.GetPixel((int)(Random.Range(0, 1f) * texture.height), (int)(Random.Range(0, 1f) * texture.width)));
                 i = index;
                 break;
             }
+            index++;
         }
     }
 
@@ -167,16 +168,26 @@ public class Initial : MonoBehaviour
         ChangeEnvironmentColor(textures[0].GetPixel((int)(Random.Range(0, 1f) * textures[0].height), (int)(Random.Range(0, 1f) * textures[0].width)));
 
 
+        viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * textures.Count + 70);
+        int j = 0;
         //create select list of pictures
-        GameObject Row = Instantiate(RowPrefab);
-        Row.transform.SetParent(viewPortContent.transform);
-        Row.name = "Row" + i.ToString();
-        Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -50);
+        foreach (Texture2D texture in textures)
 
-        GameObject SelectPictureButton = Instantiate(SelectPictureButtonPrefab);
-        SelectPictureButton.transform.SetParent(Row.transform);
-        SelectPictureButton.name = "SelectPictureButton" + i.ToString();
-        SelectPictureButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(250, 0);
+        {
+            
+            GameObject Row = Instantiate(RowPrefab);
+            Row.transform.SetParent(viewPortContent.transform);
+            Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -120 - (100*j));
+            Row.name = "Row" + i.ToString();
+            //set image name
+            Row.GetComponentsInChildren<Text>()[0].text = texture.name;
+            //set preview image
+            Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            //set OnClick reaction
+            Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => SetPictureByName(texture.name));
+            j += 1;
+        }
+
         
     }
 

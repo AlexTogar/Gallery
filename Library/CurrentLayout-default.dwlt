@@ -185,8 +185,8 @@ MonoBehaviour:
     y: 0
     width: 321
     height: 598
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -392,23 +392,23 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: fc3a0000
       m_LastClickedID: 0
-      m_ExpandedIDs: 0464ffff0077ffff0c77ffff1887ffff68c9fffffeedffffc6f0ffffd6f0ffffe2f0ffff72fbffffc8430000004400000444000060440000
+      m_ExpandedIDs: 42eeffff72fbffffce430000fa4300002444000028440000504400005a440000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Header
+        m_OriginalName: Header
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -4542
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 8}
       m_SearchString: 
@@ -454,9 +454,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 829.4328, y: 258.19907, z: -401.08438}
+    m_Target: {x: 930.0484, y: 264.86276, z: -383.542}
     speed: 2
-    m_Value: {x: 829.4328, y: 258.19907, z: -401.08438}
+    m_Value: {x: 930.0484, y: 264.86276, z: -383.542}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -502,13 +502,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.011884552, y: -0.0595215, z: 0.002276823, w: 0.99833506}
+    m_Target: {x: 0.004570993, y: 0.04992574, z: 0.0013498589, w: 0.99892575}
     speed: 2
-    m_Value: {x: 0.007372241, y: -0.06850162, z: 0.0020748014, w: 0.99762166}
+    m_Value: {x: 0.006068257, y: 0.04991853, z: 0.0012746794, w: 0.99873406}
   m_Size:
-    m_Target: 367.2359
+    m_Target: 385.87912
     speed: 2
-    m_Value: 367.2359
+    m_Value: 385.87912
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -598,20 +598,20 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Models/Prefabs
+    - Assets
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Models/Prefabs
+  - Assets
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Unity_projects\Gallery
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 16}
-    m_SelectedIDs: e0470000
-    m_LastClickedID: 18400
-    m_ExpandedIDs: 000000007c4700007e47000080470000da47000000ca9a3b
+    m_SelectedIDs: ea470000
+    m_LastClickedID: 18410
+    m_ExpandedIDs: 00000000ea470000ec470000ee4700004848000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -639,7 +639,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000007c4700007e47000080470000
+    m_ExpandedIDs: 00000000ea470000ec470000ee470000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
