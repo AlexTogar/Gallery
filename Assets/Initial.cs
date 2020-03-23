@@ -70,6 +70,18 @@ public class Initial : MonoBehaviour
         return tex;
     }
 
+    public void ChangeEnvironmentByTexture(Texture2D texture)
+    {
+        Color mainColor = GetMainColor(texture);
+        ChangeEnvironmentColor(mainColor);
+        SetDirectionalLightPosition(mainColor);//emtpy function yet
+    }
+
+    //rewrite it
+    public Color GetMainColor(Texture2D texture)
+    {
+        return texture.GetPixel((int)(Random.Range(0, 1f) * texture.height), (int)(Random.Range(0, 1f) * texture.width));
+    }
 
     public void SetLightColor(Color color)
     {
@@ -82,11 +94,16 @@ public class Initial : MonoBehaviour
         RenderSettings.fogColor = color;  //doesn't work yet
     }
 
+    public void SetDirectionalLightPosition(Color color)
+    {
+        
+    }
+
 
     public void ChangeEnvironmentColor(Color color)
     {
         SetLightColor(color);
-        //SetFogColor(color);
+        SetFogColor(color);
     }
 
     public void SetRandomEnvironmentColor()
@@ -119,7 +136,6 @@ public class Initial : MonoBehaviour
             if (texture.name == pictureName)
             {
                 picture.SetTexture("_BaseColorMap", texture);
-                ChangeEnvironmentColor(texture.GetPixel((int)(Random.Range(0, 1f) * texture.height), (int)(Random.Range(0, 1f) * texture.width)));
                 i = index;
                 break;
             }
@@ -132,7 +148,7 @@ public class Initial : MonoBehaviour
         i += 1;
         if (i > textures.Count - 1) { i = 0; }
         picture.SetTexture("_BaseColorMap", textures[i]);
-        ChangeEnvironmentColor(textures[i].GetPixel((int)(Random.Range(0, 1f) * textures[i].height), (int)(Random.Range(0, 1f) * textures[i].width)));
+        ChangeEnvironmentByTexture(textures[i]);
     }
 
     public void SetPreviousPicture()
@@ -140,7 +156,7 @@ public class Initial : MonoBehaviour
         i -= 1;
         if (i < 0) { i = textures.Count - 1; }
         picture.SetTexture("_BaseColorMap", textures[i]);
-        ChangeEnvironmentColor(textures[i].GetPixel((int)(Random.Range(0, 1f) * textures[i].height), (int)(Random.Range(0, 1f) * textures[i].width)));
+        ChangeEnvironmentByTexture(textures[i]);
     }
 
     public void QuitGame()
@@ -159,15 +175,13 @@ public class Initial : MonoBehaviour
     {
         //Hide main menu
         canvas.SetActive(false);
-        //selectPictureMenu.SetActive(false);
-        //uploadPictureMenu.SetActive(false);
-        //changeEnvironmentMenu.SetActive(false);
+
         FillTexturesList();
+
         //Set default picture and environment
         picture.SetTexture("_BaseColorMap", textures[0]);
-        ChangeEnvironmentColor(textures[0].GetPixel((int)(Random.Range(0, 1f) * textures[0].height), (int)(Random.Range(0, 1f) * textures[0].width)));
-
-
+        ChangeEnvironmentByTexture(textures[0]);
+        //allocate space in the Content object for header and rows
         viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * textures.Count + 70);
         int j = 0;
         //create select list of pictures
@@ -183,8 +197,8 @@ public class Initial : MonoBehaviour
             Row.GetComponentsInChildren<Text>()[0].text = texture.name;
             //set preview image
             Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            //set OnClick reaction
-            Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => SetPictureByName(texture.name));
+            //set OnClick handler
+            Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => { SetPictureByName(texture.name); ChangeEnvironmentByTexture(texture); });
             j += 1;
         }
 
