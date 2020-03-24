@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityTemplateProjects;
 using Color = UnityEngine.Color;
+using Debug = UnityEngine.Debug;
 
 public class Initial : MonoBehaviour
 {
@@ -147,7 +148,7 @@ public class Initial : MonoBehaviour
             if (texture.name == pictureName)
             {
                 picture.SetTexture("_BaseColorMap", texture);
-                setMainColors(ColorCalculate.GetMainColors(texture, 15));
+                setMainColors(ColorCalculate.GetMainColors(texture, 30));
                 i = index;
                 break;
             }
@@ -228,6 +229,7 @@ public class Initial : MonoBehaviour
             Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
             //set OnClick handler
             Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => { SetPictureByName(texture.name); ChangeEnvironmentByTexture(texture); });
+            Debug.Log("ksjdfljksa");
             j += 1;
         }
 

@@ -20,9 +20,9 @@ public class ColorCalculate : MonoBehaviour
 	public static List<Color> TextureToColorsList(Texture2D texture, int compressionCoef)
 	{
 		List<Color> listPixels = new List<Color>();
-		for (int i = 0;i < (int)texture.height/compressionCoef; i+=compressionCoef)
+		for (int i = 0; i < texture.height; i+=compressionCoef)
 		{
-			for (int j = 0; j < (int)texture.width/compressionCoef; j+=compressionCoef)
+			for (int j = 0; j < texture.width; j+=compressionCoef)
 			{
 				listPixels.Add(texture.GetPixel(i, j));
 			}
@@ -34,8 +34,8 @@ public class ColorCalculate : MonoBehaviour
 
 	public static float CalcDistance(Color colorOne, Color colorTwo)
 	{
-		Vector3 a = new Vector3(colorOne.a, colorOne.b, colorOne.g);
-		Vector3 b = new Vector3(colorTwo.a, colorTwo.b, colorTwo.g);
+		Vector3 a = new Vector3(colorOne.r, colorOne.g, colorOne.b);
+		Vector3 b = new Vector3(colorTwo.r, colorTwo.g, colorTwo.b);
 		return Vector3.Distance(a, b);
 	}
 
@@ -44,7 +44,7 @@ public class ColorCalculate : MonoBehaviour
 		Vector3 result = new Vector3(0,0,0);
 		foreach(Color node in colorList)
 		{
-			result += new Vector3(node.r, node.b, node.g);
+			result += new Vector3(node.r, node.g, node.b);
 		}
 		result = result / colorList.Count();
 
@@ -94,15 +94,14 @@ public class ColorCalculate : MonoBehaviour
 
 				int centerNum = distancesList[0].centerNum;
 				listCentersPixels[centerNum].Add(color);
+
+				float test = CalcDistance(new Color(1, 1, 1), new Color(0,0,0));
 			}
 
-			List<Color> newCentersList = new List<Color>();
 			for (int i = 0; i < 3; i++)
 			{
-				newCentersList.Add(CalcCenterOfMass(listCentersPixels[i]));
+				centersList[i] = CalcCenterOfMass(listCentersPixels[i]);
 			}
-
-			centersList = newCentersList;
 		}
 
 		Debug.Log("centers after algorithm processing:" +
