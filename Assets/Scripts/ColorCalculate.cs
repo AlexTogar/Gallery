@@ -1,10 +1,53 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using UnityEngine;
 using Color = UnityEngine.Color;
+
+
 public class ColorCalculate : MonoBehaviour
 {
+
+	public static void SaveTexturesToFile(string fileName, List<Texture2D> textures)
+	{
+		string json = JsonConvert.SerializeObject(textures);
+		System.IO.File.WriteAllText (fileName + ".txt", json);
+	}
+
+	public static List<Texture2D> GetTexturesFromFile(string fileName)
+	{
+		var jsonString = File.ReadAllText(fileName);
+		List<Texture2D> textures = JsonConvert.DeserializeObject<List<Texture2D>>(jsonString);
+		return textures;
+	}
+
+	public static List<Texture2D> GetNotTreatedTextures(string fileName, List<Texture2D> currentTextures)
+	{
+		List<Texture2D> oldTextures = GetTexturesFromFile(fileName);
+		List<Texture2D> resultTextures = new List<Texture2D>();
+
+		foreach (Texture2D currentTexture in currentTextures)
+		{
+			bool findFlag = false;
+			foreach (Texture2D oldTexture in oldTextures)
+			{
+				if (oldTexture == currentTexture)
+				{
+					findFlag = true;
+					break;
+				}
+			}
+
+			if (findFlag == false)
+			{
+				resultTextures.Add(currentTexture);
+			}
+		}
+		return resultTextures;
+	}
 
 	public class Node
 	{
