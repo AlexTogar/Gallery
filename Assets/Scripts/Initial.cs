@@ -12,6 +12,7 @@ using Debug = UnityEngine.Debug;
 
 public class Initial : MonoBehaviour
 {
+    //external objects
     public Material picture;
     public Material mainColorOne;
     public Material mainColorTwo;
@@ -34,8 +35,38 @@ public class Initial : MonoBehaviour
     protected bool f1Flag = false;
     //textures list, which will be filled by FillTexturesList() method, called in Start() method
     protected List<Texture2D> textures = new List<Texture2D>();
-    //protected List<System.Drawing.Bitmap> bitmaps = new List<Bitmap>();
+    Color currentDirLightColor = new Color(1, 1, 1);
     //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
+
+    public class Texture
+    {
+        public Texture2D texture { get; set; }
+        public List<Color> mainColors { get; set; }
+        public string envType { get; set; }
+        public Texture(Texture2D tex, List<Color> mainCol, string envT = "default")
+        {
+            texture = tex;
+            mainColors = mainCol;
+            envType = envT;
+        }
+
+        public Color GetLigthenColor()
+        {
+            return mainColors.Last();
+        }
+
+        public Color GetDarkenColor()
+        {
+            return mainColors.First();
+        }
+
+        public Color GetMediumColor()
+        {
+            return mainColors[1];
+        }
+
+
+    }
 
     //Deactive all menu to show one from them after that
     public void DeactiveAllMenu()
@@ -75,17 +106,12 @@ public class Initial : MonoBehaviour
 
     public void ChangeEnvironmentByTexture(Texture2D texture)
     {
-        Color mainColor = GetMainColor(texture);
+        Color mainColor = ColorCalculate.GetMainColors(texture,20,100)[2];
         ChangeEnvironmentColor(mainColor);
         SetDirectionalLightPosition(mainColor);//emtpy function yet
 
     }
 
-    //rewrite it
-    public Color GetMainColor(Texture2D texture)
-    {
-        return texture.GetPixel((int)(Random.Range(0, 1f) * texture.height), (int)(Random.Range(0, 1f) * texture.width));
-    }
 
     public void SetLightColor(Color color)
     {
@@ -110,7 +136,7 @@ public class Initial : MonoBehaviour
         SetFogColor(color);
     }
 
-    public void setMainColors(List<Color> colors)
+    public void setMainColorsPreview(List<Color> colors)
     {
         mainColorOne.SetColor("_BaseColor", colors[0]);
         mainColorTwo.SetColor("_BaseColor", colors[1]);
@@ -148,7 +174,7 @@ public class Initial : MonoBehaviour
             if (texture.name == pictureName)
             {
                 picture.SetTexture("_BaseColorMap", texture);
-                setMainColors(ColorCalculate.GetMainColors(texture, 30));
+                setMainColorsPreview(ColorCalculate.GetMainColors(texture, 30));
                 i = index;
                 break;
             }
@@ -192,22 +218,6 @@ public class Initial : MonoBehaviour
 
         FillTexturesList();
 
-        //check up new images in the picture folder and computing main colors
-        /*
-        foreach(Texture2D texture in textures)
-        {
-            var md5 = System.Security.Cryptography.MD5.Create();
-            byte[] hash = md5.ComputeHash(filesArray[k]);
-
-            if (hash != hashArrayFromFile[k])
-            {
-
-            }
-
-            k++;
-        }
-        */
-
         //Set default picture and environment
         picture.SetTexture("_BaseColorMap", textures[0]);
         ChangeEnvironmentByTexture(textures[0]);
@@ -241,6 +251,7 @@ public class Initial : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         //handler of the l pressing (next picture)
         if (Input.GetKeyDown("l") && lFlag == false)
         {

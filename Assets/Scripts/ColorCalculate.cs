@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,44 +11,8 @@ using Color = UnityEngine.Color;
 public class ColorCalculate : MonoBehaviour
 {
 
-	public static void SaveTexturesToFile(string fileName, List<Texture2D> textures)
-	{
-		string json = JsonConvert.SerializeObject(textures);
-		System.IO.File.WriteAllText (fileName + ".txt", json);
-	}
 
-	public static List<Texture2D> GetTexturesFromFile(string fileName)
-	{
-		var jsonString = File.ReadAllText(fileName);
-		List<Texture2D> textures = JsonConvert.DeserializeObject<List<Texture2D>>(jsonString);
-		return textures;
-	}
-
-	public static List<Texture2D> GetNotTreatedTextures(string fileName, List<Texture2D> currentTextures)
-	{
-		List<Texture2D> oldTextures = GetTexturesFromFile(fileName);
-		List<Texture2D> resultTextures = new List<Texture2D>();
-
-		foreach (Texture2D currentTexture in currentTextures)
-		{
-			bool findFlag = false;
-			foreach (Texture2D oldTexture in oldTextures)
-			{
-				if (oldTexture == currentTexture)
-				{
-					findFlag = true;
-					break;
-				}
-			}
-
-			if (findFlag == false)
-			{
-				resultTextures.Add(currentTexture);
-			}
-		}
-		return resultTextures;
-	}
-
+	
 	public class Node
 	{
 		public Node(float dis, int num)
@@ -59,6 +23,7 @@ public class ColorCalculate : MonoBehaviour
 		public float distance { get; set; }
 		public int centerNum { get; set; }
 	}
+
 
 	public static List<Color> TextureToColorsList(Texture2D texture, int compressionCoef)
 	{
@@ -97,17 +62,26 @@ public class ColorCalculate : MonoBehaviour
 	
 
 
-	public static List<Color> GetMainColors(Texture2D texture, int n = 12)
+	public static List<Color> GetMainColors(Texture2D texture, int n = 12, int valueSamplesOfColor = 4800)
 	{
+		double compressionCoef = System.Math.Sqrt(texture.height * texture.width / valueSamplesOfColor);
+		List<Color> colorList = new List<Color>();
+		if (compressionCoef >= 1)
+		{
+			colorList = TextureToColorsList(texture, (int)compressionCoef);
+		} else
+		{
+			Debug.Log("Error: image too small");
+			colorList = TextureToColorsList(texture, 1);
+		}
 
-		List<Color> colorList = TextureToColorsList(texture, 5);
 		List<Color> centersList = new List<Color>();
 
-		//set random c+enters position
-		for (int i = 0; i < 3; i++)
-		{
-			centersList.Add(new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f)));
-		}
+		//set centers position
+		centersList.Add(Color.red);
+		centersList.Add(Color.green);	
+		centersList.Add(Color.blue);
+			   
 		Debug.Log("centers before algorithm processing:" + 
 			centersList[0].ToString() + "\n" + 
 			centersList[1].ToString() + "\n" +
@@ -152,6 +126,7 @@ public class ColorCalculate : MonoBehaviour
 			centersList[1].ToString() + "\n" +
 			centersList[2].ToString() + "\n");
 
-		return centersList;
+		//return List of colors sorted by brightness
+		return centersList.OrderBy(x => (x.r + x.g + x.b)).ToList();
 	}
 }
