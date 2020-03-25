@@ -219,9 +219,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 5c310000
-      m_LastClickedID: 0
-      m_ExpandedIDs: 72fbffff
+      m_SelectedIDs: a8430000
+      m_LastClickedID: 17320
+      m_ExpandedIDs: 72fbffff3444000058450000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -309,9 +309,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 2.2222486, y: 1.4493351, z: -2.3694198}
+    m_Target: {x: 2.121331, y: 1.495213, z: -1.1069102}
     speed: 2
-    m_Value: {x: 2.2222486, y: 1.4493351, z: -2.3694198}
+    m_Value: {x: 2.121331, y: 1.495213, z: -1.1069102}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -357,9 +357,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.038855355, y: 0.911572, z: -0.092531934, w: -0.39919114}
+    m_Target: {x: 0.010889159, y: -0.8958509, z: 0.026409883, w: 0.44388327}
     speed: 2
-    m_Value: {x: -0.0388478, y: 0.9113948, z: -0.09251395, w: -0.39911354}
+    m_Value: {x: 0.010886996, y: -0.89567304, z: 0.02640464, w: 0.44379514}
   m_Size:
     m_Target: 2.9111066
     speed: 2
@@ -480,19 +480,19 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets/Classic Picture Frame
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts
+  - Assets/Classic Picture Frame
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Unity_projects\Gallery
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 44}
-    m_SelectedIDs: a2480000
-    m_LastClickedID: 18594
+    scrollPos: {x: 0, y: 60}
+    m_SelectedIDs: 36480000
+    m_LastClickedID: 18486
     m_ExpandedIDs: 000000003448000036480000384800003a4800003c4800003e4800004048000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -546,8 +546,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 5c310000
-    m_LastClickedInstanceID: 12636
+    m_SelectedInstanceIDs: a8430000
+    m_LastClickedInstanceID: 17320
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000000000000
     m_RenameOverlay:

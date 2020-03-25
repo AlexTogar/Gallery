@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 public class Initial : MonoBehaviour
 {
     //external objects
-    public Material picture;
+    public Material pictureMaterial;
     public Material mainColorOne;
     public Material mainColorTwo;
     public Material mainColorThree;
@@ -34,20 +34,28 @@ public class Initial : MonoBehaviour
     protected bool jFlag = false;
     protected bool f1Flag = false;
     //textures list, which will be filled by FillTexturesList() method, called in Start() method
-    protected List<Texture2D> textures = new List<Texture2D>();
-    Color currentDirLightColor = new Color(1, 1, 1);
+    protected List<Picture> pictures = new List<Picture>();
+    Queue<Color> currentLightColorQueue = new Queue<Color>();
+    Color supportColorPoint = new Color();
     //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
 
-    public class Texture
+    public class Picture
     {
         public Texture2D texture { get; set; }
         public List<Color> mainColors { get; set; }
         public string envType { get; set; }
-        public Texture(Texture2D tex, List<Color> mainCol, string envT = "default")
+        public string name { get; set; }
+        public Picture(Texture2D tex, List<Color> mainCol, string envT = "default")
         {
             texture = tex;
             mainColors = mainCol;
             envType = envT;
+            name = tex.name;
+        }
+
+        public Picture setMainColors()
+        {
+            return new Picture(texture, ColorCalculate.GetMainColors(texture, 25), envType);
         }
 
         public Color GetLigthenColor()
@@ -83,9 +91,10 @@ public class Initial : MonoBehaviour
         FileInfo[] files = d.GetFiles("*.jpg");
         foreach (FileInfo fileInfo in files)
         {
-            textures.Add(LoadJPG(fileInfo));
+            Texture2D tex = LoadJPG(fileInfo);
+            pictures.Add(new Picture(tex, ColorCalculate.GetMainColors(tex, 25)));
         }
-        textures = textures.OrderBy(o => o.name).ToList();
+        pictures = pictures.OrderBy(o => o.texture.name).ToList();
     }
 
     //Convertion from .jgp to texture
@@ -104,18 +113,33 @@ public class Initial : MonoBehaviour
         return tex;
     }
 
-    public void ChangeEnvironmentByTexture(Texture2D texture)
+    public void ChangeEnvironmentByPicture(Picture picture)
     {
-        Color mainColor = ColorCalculate.GetMainColors(texture,20,100)[2];
-        ChangeEnvironmentColor(mainColor);
-        SetDirectionalLightPosition(mainColor);//emtpy function yet
+        ChangeEnvironmentColor(picture.GetLigthenColor());
+        SetDirectionalLightPosition(picture.GetLigthenColor());//emtpy function yet
 
     }
 
 
-    public void SetLightColor(Color color)
+    public void SetLightColor(Color newColor, int iterations = 30)
     {
-        directionalLight.GetComponent<Light>().color = color;
+        Color oldColor = supportColorPoint;
+
+        //Fill the colors Queue
+        List<float> colorDiffs = new List<float>();
+        colorDiffs.Add(newColor.r - oldColor.r);
+        colorDiffs.Add(newColor.g - oldColor.g);
+        colorDiffs.Add(newColor.b - oldColor.b);
+
+
+        for (int i = 0; i < iterations; i++)
+        {
+            currentLightColorQueue.Enqueue(new Color(   oldColor.r + (colorDiffs[0] / iterations) * i,
+                                                        oldColor.g + (colorDiffs[1] / iterations) * i,
+                                                        oldColor.b + (colorDiffs[2] / iterations) * i));
+        }
+
+        supportColorPoint = newColor;
 
     }
 
@@ -168,13 +192,13 @@ public class Initial : MonoBehaviour
     {
         // Texture2D newTexture = new Texture2D(1000, 1000);
         int index = 0;
-        foreach (Texture2D texture in textures)
+        foreach (Picture picture in pictures)
         {
 
-            if (texture.name == pictureName)
+            if (picture.name == pictureName)
             {
-                picture.SetTexture("_BaseColorMap", texture);
-                setMainColorsPreview(ColorCalculate.GetMainColors(texture, 30));
+                pictureMaterial.SetTexture("_BaseColorMap", picture.texture);
+                setMainColorsPreview(picture.mainColors);
                 i = index;
                 break;
             }
@@ -185,17 +209,20 @@ public class Initial : MonoBehaviour
     public void SetNextPicture()
     {
         i += 1;
-        if (i > textures.Count - 1) { i = 0; }
-        picture.SetTexture("_BaseColorMap", textures[i]);
-        ChangeEnvironmentByTexture(textures[i]);
+        if (i > pictures.Count - 1) { i = 0; }
+        pictureMaterial.SetTexture("_BaseColorMap", pictures[i].texture);
+        ChangeEnvironmentByPicture(pictures[i]);
+        setMainColorsPreview(pictures[i].mainColors);
     }
 
     public void SetPreviousPicture()
     {
         i -= 1;
-        if (i < 0) { i = textures.Count - 1; }
-        picture.SetTexture("_BaseColorMap", textures[i]);
-        ChangeEnvironmentByTexture(textures[i]);
+        if (i < 0) { i = pictures.Count - 1; }
+        pictureMaterial.SetTexture("_BaseColorMap", pictures[i].texture);
+        ChangeEnvironmentByPicture(pictures[i]);
+        setMainColorsPreview(pictures[i].mainColors);
+
     }
 
     public void QuitGame()
@@ -215,17 +242,16 @@ public class Initial : MonoBehaviour
         //Hide main menu
         canvas.SetActive(false);
 
-
         FillTexturesList();
 
         //Set default picture and environment
-        picture.SetTexture("_BaseColorMap", textures[0]);
-        ChangeEnvironmentByTexture(textures[0]);
+        pictureMaterial.SetTexture("_BaseColorMap", pictures[0].texture);
+        ChangeEnvironmentByPicture(pictures[0]);
         //allocate space in the Content object for header and rows
-        viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * textures.Count + 70);
+        viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * pictures.Count + 70);
         int j = 0;
         //create select list of pictures
-        foreach (Texture2D texture in textures)
+        foreach (Picture picture in pictures)
 
         {
             
@@ -234,11 +260,11 @@ public class Initial : MonoBehaviour
             Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -120 - (100*j));
             Row.name = "Row" + i.ToString();
             //set image name
-            Row.GetComponentsInChildren<Text>()[0].text = texture.name;
+            Row.GetComponentsInChildren<Text>()[0].text = picture.name;
             //set preview image
-            Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(picture.texture, new Rect(0, 0, picture.texture.width, picture.texture.height), Vector2.zero);
             //set OnClick handler
-            Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => { SetPictureByName(texture.name); ChangeEnvironmentByTexture(texture); });
+            Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => { SetPictureByName(picture.name); ChangeEnvironmentByPicture(picture); });
             Debug.Log("ksjdfljksa");
             j += 1;
         }
@@ -251,6 +277,11 @@ public class Initial : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (currentLightColorQueue.Count() != 0)
+        {
+            directionalLight.GetComponent<Light>().color = currentLightColorQueue.Dequeue();
+        }
+
 
         //handler of the l pressing (next picture)
         if (Input.GetKeyDown("l") && lFlag == false)
