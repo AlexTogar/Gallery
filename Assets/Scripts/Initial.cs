@@ -13,6 +13,9 @@ using Debug = UnityEngine.Debug;
 public class Initial : MonoBehaviour
 {
     //external objects
+    public GameObject pictureObject;
+    public Material armchairMaterial;
+    public Material artMaterial;
     public Material pictureMaterial;
     public Material mainColorOne;
     public Material mainColorTwo;
@@ -35,6 +38,7 @@ public class Initial : MonoBehaviour
     protected bool f1Flag = false;
     //textures list, which will be filled by FillTexturesList() method, called in Start() method
     protected List<Picture> pictures = new List<Picture>();
+    protected List<Picture> currentPicturesListUI = new List<Picture>();
     Queue<Color> currentLightColorQueue = new Queue<Color>();
     Color supportColorPoint = new Color();
     //===================== HELPFUL ADDITIONAL OWN METHODS ===========================
@@ -45,17 +49,18 @@ public class Initial : MonoBehaviour
         public List<Color> mainColors { get; set; }
         public string envType { get; set; }
         public string name { get; set; }
-        public Picture(Texture2D tex, List<Color> mainCol, string envT = "default")
-        {
-            texture = tex;
-            mainColors = mainCol;
-            envType = envT;
-            name = tex.name;
-        }
+        public float realWidth { get; set; }
+        public float scaleSize { get; set; }
+        
 
-        public Picture setMainColors()
+        public Picture(Texture2D textureParam, float realWidthParam = 1.17f, float scaleSizeParam = 1, string evnTypeParam = "default")
         {
-            return new Picture(texture, ColorCalculate.GetMainColors(texture, 25), envType);
+            texture = textureParam;
+            mainColors = ColorCalculate.GetMainColors(textureParam, 25, 4500);
+            envType = evnTypeParam;
+            name = textureParam.name;
+            scaleSize = scaleSizeParam;
+            realWidth = realWidthParam;
         }
 
         public Color GetLigthenColor()
@@ -73,6 +78,12 @@ public class Initial : MonoBehaviour
             return mainColors[1];
         }
 
+        public Picture setScaleByRealWidth()
+        {
+
+            scaleSize = realWidth / 1.17f;
+            return this;
+        }
 
     }
 
@@ -84,7 +95,7 @@ public class Initial : MonoBehaviour
         changeEnvironmentMenu.SetActive(false);
     }
     //fill textures list from /Assets/pictures/ folder with .jpg extension
-    void FillTexturesList()
+    void FillPicturesList()
     {
         string currentFolderPath = System.Environment.CurrentDirectory;
         DirectoryInfo d = new DirectoryInfo(currentFolderPath + "/Assets/" + "/pictures/");
@@ -92,7 +103,7 @@ public class Initial : MonoBehaviour
         foreach (FileInfo fileInfo in files)
         {
             Texture2D tex = LoadJPG(fileInfo);
-            pictures.Add(new Picture(tex, ColorCalculate.GetMainColors(tex, 25)));
+            pictures.Add(new Picture(tex,realWidthParam: Random.Range(1.17f,3f)));
         }
         pictures = pictures.OrderBy(o => o.texture.name).ToList();
     }
@@ -117,6 +128,13 @@ public class Initial : MonoBehaviour
     {
         ChangeEnvironmentColor(picture.GetLigthenColor());
         SetDirectionalLightPosition(picture.GetLigthenColor());//emtpy function yet
+        //set frame's color
+        artMaterial.SetColor("_BaseColor", picture.GetLigthenColor());
+        //set additional armchair's color
+        armchairMaterial.SetColor("_BaseColor", picture.GetDarkenColor());
+        //set scale of the picture
+        //float scale = picture.setScaleByRealWidth().scaleSize;
+        //pictureObject.GetComponent<Transform>().localScale = new Vector3(scale,scale,scale);
 
     }
 
@@ -233,31 +251,33 @@ public class Initial : MonoBehaviour
         UnityEditor.EditorApplication.isPlaying = false;
     }
 
-
-    //===================== BUILT-IN METHODS ===========================
-
-    // Start is called before the first frame update
-    void Start()
+    
+    public void SortSelectListOfPictures()
     {
-        //Hide main menu
-        canvas.SetActive(false);
+        currentPicturesListUI.Reverse();
+        UpdateSelectListOfPictures(currentPicturesListUI);
+    }
 
-        FillTexturesList();
-
-        //Set default picture and environment
-        pictureMaterial.SetTexture("_BaseColorMap", pictures[0].texture);
-        ChangeEnvironmentByPicture(pictures[0]);
-        //allocate space in the Content object for header and rows
-        viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * pictures.Count + 70);
+    public void UpdateSelectListOfPictures(List<Picture> pictures)
+    {
+        //remove all Rows
+        foreach (Transform child in viewPortContent.transform)
+        {
+            if (child.name.Contains("Row")) {
+                //Destroy(GameObject.Find(child.name));
+            }
+        }
+            
+        //add new Rows
         int j = 0;
-        //create select list of pictures
         foreach (Picture picture in pictures)
 
         {
-            
+
             GameObject Row = Instantiate(RowPrefab);
+            Row.transform.localScale = new Vector3(1, 1, 1);
             Row.transform.SetParent(viewPortContent.transform);
-            Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -120 - (100*j));
+            Row.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -120 - (100 * j));
             Row.name = "Row" + i.ToString();
             //set image name
             Row.GetComponentsInChildren<Text>()[0].text = picture.name;
@@ -265,11 +285,28 @@ public class Initial : MonoBehaviour
             Row.GetComponentsInChildren<Image>()[0].sprite = Sprite.Create(picture.texture, new Rect(0, 0, picture.texture.width, picture.texture.height), Vector2.zero);
             //set OnClick handler
             Row.GetComponentsInChildren<Button>()[0].onClick.AddListener(() => { SetPictureByName(picture.name); ChangeEnvironmentByPicture(picture); });
-            Debug.Log("ksjdfljksa");
             j += 1;
         }
+    }
 
-        
+    //===================== BUILT-IN METHODS ===========================
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        currentPicturesListUI = pictures;
+        //Hide main menu
+        canvas.SetActive(false);
+
+        FillPicturesList();
+
+        //Set default picture and environment
+        pictureMaterial.SetTexture("_BaseColorMap", pictures[0].texture);
+        ChangeEnvironmentByPicture(pictures[0]);
+        //allocate space in the Content object for header and rows
+        viewPortContent.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 100 * pictures.Count + 70);
+        UpdateSelectListOfPictures(pictures);
+                
     }
 
 
