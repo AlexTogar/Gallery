@@ -60,9 +60,103 @@ public class ColorCalculate : MonoBehaviour
 	}
 
 	
+	public class MainColor
+	{
+		public Color color { get; set; }
+		public int capacity { get; set; }
+		public MainColor(Color col = new Color(),int cap = 0)
+		{
+			color = col;
+			capacity = cap;
+		}
+	}
+
+	[System.Serializable]
+	public class SerializableMainColor
+	{
+		public List<float> color { get; set; }
+		public int capacity { get; set; }
+		public SerializableMainColor(Color col = new Color(), int cap = 0)
+		{
+			color = new List<float>();
+			color.Add(col.r);
+			color.Add(col.g);
+			color.Add(col.b);
+
+			capacity = cap;
+		}
+	}
+
+	[System.Serializable]
+	public class SerializableMainColors
+	{
+		public List<SerializableMainColor> mainColors {get; set;}
+		public int hash { get; set; }
+		public SerializableMainColors(List<MainColor> mainColorsParam, int hashParam)
+		{
+			mainColors = new List<SerializableMainColor>()
+			{
+				new SerializableMainColor(mainColorsParam[0].color, mainColorsParam[0].capacity),
+				new SerializableMainColor(mainColorsParam[1].color, mainColorsParam[1].capacity),
+				new SerializableMainColor(mainColorsParam[2].color, mainColorsParam[2].capacity)
+			};
+
+			hash = hashParam;
+		}
+	}
+
+	
+	public static Color LightUpdate(Color color, bool enabled)
+	{
+		if (enabled)
+		{
+			float func(float x)
+			{
+				return 3.5f*(-0.57f + 1 / (x + 1.45f)) - 0.1f;
+			}
 
 
-	public static List<Color> GetMainColors(Texture2D texture, int n = 12, int valueSamplesOfColor = 4800)
+			float currentRate = (color.r + color.g + color.b) / (255f * 3);
+
+			float delta = func(currentRate);
+			return new Color(color.r + delta, color.g + delta, color.b + delta);
+		} else
+		{
+			return color;
+		}
+
+	}
+
+	//Calculating 3 centers (colors) with biggets r,g and b param
+	public static List<Color> GetInitialCenters(List<Color> colorList)
+	{
+		List<Color> centers = new List<Color>();
+		centers.Add(new Color());
+		centers.Add(new Color());
+		centers.Add(new Color());
+		Color centerMass = CalcCenterOfMass(colorList);
+
+		try
+		{
+			centers[0] = centerMass + new Color(0.1f, 0, 0);
+			centers[1] = centerMass + new Color(0, 0.1f, 0);
+			centers[2] = centerMass + new Color(0, 0, 0.1f);
+		} 
+		catch 
+		{
+			centers[0] = Color.red;
+			centers[1] = Color.green;
+			centers[2] = Color.blue;
+		}
+
+			   
+		return centers;
+	 
+	}
+	
+
+
+	public static List<MainColor> GetMainColors(Texture2D texture, int n = 12, int valueSamplesOfColor = 2000)
 	{
 		double compressionCoef = System.Math.Sqrt(texture.height * texture.width / valueSamplesOfColor);
 		List<Color> colorList = new List<Color>();
@@ -75,17 +169,14 @@ public class ColorCalculate : MonoBehaviour
 			colorList = TextureToColorsList(texture, 1);
 		}
 
-		List<Color> centersList = new List<Color>();
+		List<MainColor> centersList = new List<MainColor>();
 
 		//set centers position
-		centersList.Add(Color.red);
-		centersList.Add(Color.green);	
-		centersList.Add(Color.blue);
+		List<Color> initCenters = GetInitialCenters(colorList);
+		centersList.Add(new MainColor(initCenters[0], 0));
+		centersList.Add(new MainColor(initCenters[1], 0));	
+		centersList.Add(new MainColor(initCenters[2], 0));
 			   
-		Debug.Log("centers before algorithm processing:" + 
-			centersList[0].ToString() + "\n" + 
-			centersList[1].ToString() + "\n" +
-			centersList[2].ToString() + "\n");
 	
 		//calculate lists of pixels belonging to centers
 		List<Node> distancesList = new List<Node>();
@@ -102,9 +193,9 @@ public class ColorCalculate : MonoBehaviour
 			{
 				distancesList = new List<Node>();
 
-				distancesList.Add(new Node(CalcDistance(color, centersList[0]), 0));
-				distancesList.Add(new Node(CalcDistance(color, centersList[1]), 1));
-				distancesList.Add(new Node(CalcDistance(color, centersList[2]), 2));
+				distancesList.Add(new Node(CalcDistance(color, centersList[0].color), 0));
+				distancesList.Add(new Node(CalcDistance(color, centersList[1].color), 1));
+				distancesList.Add(new Node(CalcDistance(color, centersList[2].color), 2));
 
 				//sort list
 				distancesList = distancesList.OrderBy(x => x.distance).ToList();
@@ -112,21 +203,72 @@ public class ColorCalculate : MonoBehaviour
 				int centerNum = distancesList[0].centerNum;
 				listCentersPixels[centerNum].Add(color);
 
-				float test = CalcDistance(new Color(1, 1, 1), new Color(0,0,0));
 			}
 
-			for (int i = 0; i < 3; i++)
+			for (int i = 0	; i < 3; i++)
 			{
-				centersList[i] = CalcCenterOfMass(listCentersPixels[i]);
+				centersList[i].color = CalcCenterOfMass(listCentersPixels[i]);
+				centersList[i].capacity = listCentersPixels[i].Count();
 			}
 		}
 
-		Debug.Log("centers after algorithm processing:" +
-			centersList[0].ToString() + "\n" +
-			centersList[1].ToString() + "\n" +
-			centersList[2].ToString() + "\n");
+		centersList = UpdateColorListWithNaN(centersList);
+
 
 		//return List of colors sorted by brightness
-		return centersList.OrderBy(x => (x.r + x.g + x.b)).ToList();
+		return centersList.OrderBy(x => (x.color.r + x.color.g + x.color.b)).ToList<MainColor>();
+	}
+
+	public static List<MainColor> UpdateColorListWithNaN(List<MainColor> colorList)
+	{
+		//calculate valid color
+		MainColor mainColor = new MainColor();
+		foreach(MainColor color in colorList)
+		{
+			if (ValidColor(color.color))
+			{
+				mainColor = color;
+			}
+		}
+
+		//init result color list
+		List<MainColor> resultColorList = new List<MainColor>();
+		for (int i = 0; i < colorList.Count(); i++)
+		{
+			resultColorList.Add(new MainColor());
+		}
+
+		//fill reslut color list
+		for (int i = 0; i < colorList.Count(); i++)
+		{
+			if (!ValidColor(colorList[i].color))
+			{
+				resultColorList[i] = mainColor;
+			}
+			else
+			{
+				resultColorList[i] = colorList[i];
+			}
+		}
+
+		return resultColorList;
+	}
+
+	
+
+	public static bool ValidColor(Color color)
+	{
+		if (float.IsNaN(color.r) || float.IsNaN(color.g) || float.IsNaN(color.b))
+		{
+			return false;
+		} else
+		{
+			return true;
+		}
+	}
+
+	public static List<MainColor> SortByCapacity(List<MainColor> colorList)
+	{
+		return colorList.OrderBy(x => (x.capacity)).ToList<MainColor>();
 	}
 }
