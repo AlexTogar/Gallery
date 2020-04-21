@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Revert : MonoBehaviour
+//Applies to object which should to teleport to initial spot if it fall to the ground
+public class DropTreatment : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject floor;
@@ -11,6 +12,7 @@ public class Revert : MonoBehaviour
 
     void Start()
     {
+        //Remember the initial position
         startPosition = gameObject.transform.position;
         StartRotation = gameObject.transform.rotation;
     }
@@ -23,9 +25,10 @@ public class Revert : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        print("fsdf");
+        //if the object thouches ground
         if (collision.gameObject.name == floor.name)
         {
+            //Teleport object to initial spot
             gameObject.GetComponent<Rigidbody>().isKinematic = true;
             gameObject.transform.position = startPosition;
             gameObject.transform.rotation = StartRotation;

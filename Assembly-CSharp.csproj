@@ -397,8 +397,8 @@
     <Compile Include="Assets\Oculus\Spatializer\scripts\helpers\ONSPReflectionZone.cs" />
     <Compile Include="Assets\Scripts\ChangeMode.cs" />
     <Compile Include="Assets\Scripts\ColorCalculate.cs" />
+    <Compile Include="Assets\Scripts\DropTreatment.cs" />
     <Compile Include="Assets\Scripts\Initial.cs" />
-    <Compile Include="Assets\Scripts\Revert.cs" />
     <Compile Include="Assets\Scripts\SimpleCameraController.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
     <None Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Shaders\XingLightShader.shader" />

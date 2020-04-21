@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 
 public class ChangeMode : MonoBehaviour
@@ -22,6 +20,7 @@ public class ChangeMode : MonoBehaviour
 
     void Start()
     {
+        //Instantiate new lights from prefab
         dayProfile = dayModeObj.GetComponent<Volume>().profile;
         dayDirecationalLight = Instantiate(directionalDayLightPrefab);
         nightDirectionalLight = Instantiate(directionalNightLightPrefab);
@@ -67,10 +66,5 @@ public class ChangeMode : MonoBehaviour
         spotLight.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     
 }

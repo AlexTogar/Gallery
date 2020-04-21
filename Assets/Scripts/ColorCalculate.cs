@@ -1,8 +1,4 @@
-﻿
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.IsolatedStorage;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Color = UnityEngine.Color;
@@ -11,8 +7,7 @@ using Color = UnityEngine.Color;
 public class ColorCalculate : MonoBehaviour
 {
 
-
-	
+	//Class for describe every node for clustering
 	public class Node
 	{
 		public Node(float dis, int num)
@@ -24,7 +19,7 @@ public class ColorCalculate : MonoBehaviour
 		public int centerNum { get; set; }
 	}
 
-
+	//Convert texture into color list
 	public static List<Color> TextureToColorsList(Texture2D texture, int compressionCoef)
 	{
 		List<Color> listPixels = new List<Color>();
@@ -40,6 +35,7 @@ public class ColorCalculate : MonoBehaviour
 	}
 
 
+	//Calculate the distance between nodes (colors)
 	public static float CalcDistance(Color colorOne, Color colorTwo)
 	{
 		Vector3 a = new Vector3(colorOne.r, colorOne.g, colorOne.b);
@@ -47,6 +43,7 @@ public class ColorCalculate : MonoBehaviour
 		return Vector3.Distance(a, b);
 	}
 
+	//Calculate the center of mass of the nodes (colors)
 	public static Color CalcCenterOfMass(List<Color> colorList)
 	{
 		Vector3 result = new Vector3(0,0,0);
@@ -59,7 +56,7 @@ public class ColorCalculate : MonoBehaviour
 		return new Color(result.x, result.y, result.z);
 	}
 
-	
+	//Class for describe main colors of picture
 	public class MainColor
 	{
 		public Color color { get; set; }
@@ -71,6 +68,7 @@ public class ColorCalculate : MonoBehaviour
 		}
 	}
 
+	//Class for serialize/deserialize main colors list
 	[System.Serializable]
 	public class SerializableMainColor
 	{
@@ -87,6 +85,7 @@ public class ColorCalculate : MonoBehaviour
 		}
 	}
 
+	//Class to serialize/deserialize main colors list
 	[System.Serializable]
 	public class SerializableMainColors
 	{
@@ -105,7 +104,7 @@ public class ColorCalculate : MonoBehaviour
 		}
 	}
 
-	
+	//Make color lighten if it's not enough (using y = a + b(1/x) function)
 	public static Color LightUpdate(Color color, bool enabled)
 	{
 		if (enabled)
@@ -127,7 +126,7 @@ public class ColorCalculate : MonoBehaviour
 
 	}
 
-	//Calculating 3 centers (colors) with biggets r,g and b param
+	//Calculate 3 centers (colors) with biggest r,g and b params
 	public static List<Color> GetInitialCenters(List<Color> colorList)
 	{
 		List<Color> centers = new List<Color>();
@@ -155,7 +154,7 @@ public class ColorCalculate : MonoBehaviour
 	}
 	
 
-
+	//Get main color from texture ordered by lightness
 	public static List<MainColor> GetMainColors(Texture2D texture, int n = 12, int valueSamplesOfColor = 2000)
 	{
 		double compressionCoef = System.Math.Sqrt(texture.height * texture.width / valueSamplesOfColor);
@@ -219,6 +218,7 @@ public class ColorCalculate : MonoBehaviour
 		return centersList.OrderBy(x => (x.color.r + x.color.g + x.color.b)).ToList<MainColor>();
 	}
 
+	//Replace NaN in main colors list
 	public static List<MainColor> UpdateColorListWithNaN(List<MainColor> colorList)
 	{
 		//calculate valid color
@@ -255,7 +255,7 @@ public class ColorCalculate : MonoBehaviour
 	}
 
 	
-
+	//Check the color on NaN value
 	public static bool ValidColor(Color color)
 	{
 		if (float.IsNaN(color.r) || float.IsNaN(color.g) || float.IsNaN(color.b))
@@ -267,6 +267,7 @@ public class ColorCalculate : MonoBehaviour
 		}
 	}
 
+	//Sort list of main colors by capacity (amount of nodes belonging to every cluster)
 	public static List<MainColor> SortByCapacity(List<MainColor> colorList)
 	{
 		return colorList.OrderBy(x => (x.capacity)).ToList<MainColor>();

@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityTemplateProjects;
 using static ColorCalculate;
 using Color = UnityEngine.Color;
 using Debug = UnityEngine.Debug;
@@ -39,7 +35,7 @@ public class Initial : MonoBehaviour
     public GameObject searchMenu;
     public GameObject RowPrefab;
     public GameObject mainCamera;
-    public UnityEngine.UI.InputField searchInputField;
+    public InputField searchInputField;
     public bool lightUpdatingEnabled;
     public float sliderPosition = 1;
     protected System.Random rnd = new System.Random();
@@ -202,7 +198,7 @@ public class Initial : MonoBehaviour
         searchMenu.SetActive(false);
     }
 
-    //fill pictures list from /Assets/pictures/ folder with only .jpg and .png extensions
+    //Fill pictures list from /Assets/pictures/ folder with only .jpg and .png extensions
     void FillPicturesList()
     {
         pictures = new List<Picture>();
@@ -224,6 +220,7 @@ public class Initial : MonoBehaviour
         pictures = pictures.OrderBy(o => o.texture. name).ToList();
     }
 
+    //Checking h/w relation with putted tolerance
     static bool CheckTextureRelation(Texture2D texture, float tolearnce = 0.1f)
     {
         float relation = (float)texture.width / (float)texture.height;
@@ -274,7 +271,7 @@ public class Initial : MonoBehaviour
 
     }
 
-
+    //Add color to the color of directional light queue
     public void AddLightColorToQueue(Color newColor, int iterations = 20)
     {
         Color oldColor = supportColorPoint;
@@ -298,16 +295,15 @@ public class Initial : MonoBehaviour
     }
 
 
-    //debug method
+    //Fill the additional pictures to show main colors in scene
     public void setMainColorsPreview(List<Color> colors)
     {
         mainColorOne.SetColor("_BaseColor", colors[0]);
         mainColorTwo.SetColor("_BaseColor", colors[1]);
         mainColorThree.SetColor("_BaseColor", colors[2]);
-
     }
 
-
+    //Handle for the VR controller Start button pressing
     public void ResumeOrPauseGame()
     {
         if (canvas.active)
@@ -323,6 +319,7 @@ public class Initial : MonoBehaviour
         }
     }
 
+    //Handle for the "Открыть папку" button in "Добавить/Удалить изобр." menu
     public void OpenPicturesFolder()
     {
         string path = System.Environment.CurrentDirectory + "\\Assets\\pictures";
@@ -330,6 +327,7 @@ public class Initial : MonoBehaviour
         Process.Start("explorer.exe", path);
     }
 
+    //Set the texture of image to the picture's 3D model by name
     public void SetPictureByName(string pictureName)
     {
         // Texture2D newTexture = new Texture2D(1000, 1000);
@@ -348,6 +346,7 @@ public class Initial : MonoBehaviour
         }
     }
 
+    //Show next picutre in scene
     public void SetNextPicture()
     {
         i += 1;
@@ -357,6 +356,7 @@ public class Initial : MonoBehaviour
         setMainColorsPreview(pictures[i].mainColors.ConvertAll<Color>(x => x.color));
     }
 
+    //Show previous picture in scene
     public void SetPreviousPicture()
     {
         i -= 1;
@@ -375,14 +375,14 @@ public class Initial : MonoBehaviour
         //UnityEditor.EditorApplication.isPlaying = false;
     }
 
-    //create pictures and savedData folders if they don't exist
+    //create pictures and savedData folders if they are not exist
     public void CreateRequiredFolders()
     {
         System.IO.Directory.CreateDirectory(System.Environment.CurrentDirectory + "/Assets" + "/savedData");
         System.IO.Directory.CreateDirectory(System.Environment.CurrentDirectory + "/Assets" + "/pictures");
     }
 
-
+    //Fill select list of pictures in menu "Выбрать изображение"
     public void FillSelectListOfPictures(List<Picture> pictures, string searchString = "")
     {
         //remove all old rows
@@ -425,7 +425,7 @@ public class Initial : MonoBehaviour
         }
     }
 
-
+    //Set color of the Directional Light instantly
     public void SetLightColor(Color color)
     {
         GameObject day = GameObject.Find("DayDirectionalLight");
@@ -436,45 +436,7 @@ public class Initial : MonoBehaviour
     }
 
 
-    public void FillColorListForSlider()
-    {
-        List<Color> mainColors = currentPicture.mainColors.ConvertAll<Color>(x => x.color);
-        sliderColorList = new List<Color>();
-        int iterations = 20;
-        //fill colorDiffs
-        List<float> colorDiffs = new List<float>();
-        colorDiffs.Add(0f);
-        colorDiffs.Add(0f);
-        colorDiffs.Add(0f);
-
-        for (int i = 0; i < 2; i++)
-        {
-
-            colorDiffs[0] = mainColors[i + 1].r - mainColors[i].r;
-            colorDiffs[1] = mainColors[i + 1].g - mainColors[i].g;
-            colorDiffs[2] = mainColors[i + 1].b - mainColors[i].b;
-
-            for (int j = 0; j < iterations; j++)
-            {
-                sliderColorList.Add(new Color(mainColors[j].r + (colorDiffs[0] / iterations) * j,
-                                              mainColors[j].g + (colorDiffs[1] / iterations) * j,
-                                              mainColors[j].b + (colorDiffs[2] / iterations) * j));
-            }
-
-        }
-    }
-
-    public void UpdateLightColorAccordingToSlider(float x)
-    {
-        int index = sliderColorList.Count()-1;
-        Color newColor = sliderColorList[(int)((float)index * x)];
-        GameObject day = GameObject.Find("DayDirectionalLight");
-        GameObject night = GameObject.Find("NightDirectionalLight");
-        day.GetComponent<Light>().color = newColor;
-        night.GetComponent<Light>().color = newColor;
-    }
-
-    //Function for button "Update List"
+    //Handle for the button "Обновить список"
     public void ReloadPicturesFromFolder(string str)
     {
         FillPicturesList();
@@ -490,9 +452,8 @@ public class Initial : MonoBehaviour
 
     }
 
-
-
-    //===================== BUILT-IN METHODS ===========================
+    
+    //===================== BUILT-IN UNITY METHODS ===========================
 
     // Start is called before the first frame update
     void Start()
