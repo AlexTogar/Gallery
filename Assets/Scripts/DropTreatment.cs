@@ -17,12 +17,6 @@ public class DropTreatment : MonoBehaviour
         StartRotation = gameObject.transform.rotation;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         //if the object thouches ground

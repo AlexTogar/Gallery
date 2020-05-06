@@ -20,9 +20,10 @@ public class ColorCalculate : MonoBehaviour
 	}
 
 	//Convert texture into color list
-	public static List<Color> TextureToColorsList(Texture2D texture, int compressionCoef)
+	public static List<Color> TextureToColorsList(Texture2D texture, int compressionCoef = 1)
 	{
 		List<Color> listPixels = new List<Color>();
+
 		for (int i = 0; i < texture.height; i+=compressionCoef)
 		{
 			for (int j = 0; j < texture.width; j+=compressionCoef)
@@ -157,9 +158,9 @@ public class ColorCalculate : MonoBehaviour
 	//Get main color from texture ordered by lightness
 	public static List<MainColor> GetMainColors(Texture2D texture, int n = 12, int valueSamplesOfColor = 2000)
 	{
-		double compressionCoef = System.Math.Sqrt(texture.height * texture.width / valueSamplesOfColor);
+		double compressionCoef = System.Math.Sqrt((double)texture.height * (double)texture.width / (double)valueSamplesOfColor);
 		List<Color> colorList = new List<Color>();
-		if (compressionCoef >= 1)
+		if (compressionCoef >= 1f)
 		{
 			colorList = TextureToColorsList(texture, (int)compressionCoef);
 		} else

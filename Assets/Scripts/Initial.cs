@@ -79,7 +79,7 @@ public class Initial : MonoBehaviour
             name = textureParam.name;
             dataSaveFolderPath = System.Environment.CurrentDirectory + "/Assets" + "/savedData";
             hash = GetTextureHash(textureParam);
-            //if main colors of current picture now found => it will be calculated and saved in memory
+            //if main colors of current picture not found => it will be calculated and saved in memory
             if (!LoadMainColors())
             {
                 mainColors = GetMainColors(textureParam, 25, 4500);
@@ -168,8 +168,17 @@ public class Initial : MonoBehaviour
         {
 
             //20 samples of pixels
-            double compressionCoef = System.Math.Sqrt(texture.height * texture.width / 20);
-            List<Color> pixels = TextureToColorsList(texture, (int)compressionCoef);
+            List<Color> pixels = new List<Color>();
+            double compressionCoef = System.Math.Sqrt((double)texture.height * (double)texture.width / 20f);
+            if (compressionCoef >= 1f)
+            {
+                pixels = TextureToColorsList(texture, (int)compressionCoef);
+            }
+            else
+            {
+                pixels = TextureToColorsList(texture, 1);
+            }
+            
             string hash = "";
             foreach (Color pixel in pixels)
             {
@@ -186,8 +195,7 @@ public class Initial : MonoBehaviour
 
     }
 
-
-
+    
     //Deactive all menu to show one from them after that
     public void DeactiveAllMenu()
     {
@@ -235,7 +243,6 @@ public class Initial : MonoBehaviour
         }
     }
 
-
     //Convertion from files to texture via path
     static Texture2D LoadImage(FileInfo filePath)
     {
@@ -265,7 +272,7 @@ public class Initial : MonoBehaviour
         badsideMaterialFirst.SetColor("_BaseColor", picture.GetDarkenColor());
         badsideMaterialSecond.SetColor("_BaseColor", picture.GetDarkenColor());
         badsideMaterialThird.SetColor("_BaseColor", ColorCalculate.LightUpdate(picture.GetLeastFrequentColor(), true));
-
+        Debug.Log(SortByCapacity(picture.mainColors).ConvertAll(x => x.color));
         currentPicture = picture;
         //FillColorListForSlider();
 
@@ -293,7 +300,6 @@ public class Initial : MonoBehaviour
         supportColorPoint = newColor;
 
     }
-
 
     //Fill the additional pictures to show main colors in scene
     public void setMainColorsPreview(List<Color> colors)
@@ -323,7 +329,13 @@ public class Initial : MonoBehaviour
     public void OpenPicturesFolder()
     {
         string path = System.Environment.CurrentDirectory + "\\Assets\\pictures";
-        Debug.Log(path);
+        Process.Start("explorer.exe", path);
+    }
+
+    //Handle for the "Руководство" button in Main Menu
+    public void OpenGuideFolder()
+    {
+        string path = System.Environment.CurrentDirectory + "\\Assets\\guide";
         Process.Start("explorer.exe", path);
     }
 
@@ -375,11 +387,12 @@ public class Initial : MonoBehaviour
         //UnityEditor.EditorApplication.isPlaying = false;
     }
 
-    //create pictures and savedData folders if they are not exist
+    //create pictures, savedData and guide folders if they are not exist
     public void CreateRequiredFolders()
     {
         System.IO.Directory.CreateDirectory(System.Environment.CurrentDirectory + "/Assets" + "/savedData");
         System.IO.Directory.CreateDirectory(System.Environment.CurrentDirectory + "/Assets" + "/pictures");
+        System.IO.Directory.CreateDirectory(System.Environment.CurrentDirectory + "/Assets" + "/guide");
     }
 
     //Fill select list of pictures in menu "Выбрать изображение"
