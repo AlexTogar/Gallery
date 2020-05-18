@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 //Applies to object which should to teleport to initial spot if it fall to the ground
 public class DropTreatment : MonoBehaviour

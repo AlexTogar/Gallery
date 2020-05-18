@@ -437,6 +437,7 @@
     <None Include="Assets\savedData\Кораблекрушение 1864 (1917-1900).txt" />
     <None Include="Assets\Oculus\SampleFramework\Usage\HandsTrainExample\Shaders\OculusSampleTrainSmokeShader.shader" />
     <None Include="Assets\savedData\Закат в Йосемитской долине (1830-1902).txt" />
+    <None Include="Assets\savedData\2020-05-17_00-51-17.txt" />
     <None Include="Assets\Oculus\SampleFramework\Core\Video\Plugins\Android\Audio360\NOTICE.txt" />
     <None Include="Assets\Oculus\SampleFramework\Usage\Locomotion\Shaders\TriPlanarWorld.shader" />
     <None Include="Assets\Oculus\SampleFramework\Core\Video\Plugins\Android\Audio360\ThirdPartyNotices.txt" />
